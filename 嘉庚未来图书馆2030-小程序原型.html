@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>嘉庚·未来图书馆 2030 — 数据驱动型小程序交互原型</title>
+<style>
+  :root{
+    --bg:#0b1026;--card:#ffffff;--primary:#B8332A;--primary2:#E08A2B;
+    --accent:#1FA98C;--pink:#E0799C;--ink:#1c2340;--muted:#8a93b2;--line:#eceef6;
+    --grad:linear-gradient(135deg,#B8332A,#E08A2B 60%,#1FA98C);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:"PingFang SC","HarmonyOS Sans SC","Microsoft YaHei",sans-serif;
+    background:radial-gradient(1200px 600px at 80% -10%,rgba(224,138,43,.25),transparent 60%),
+      radial-gradient(900px 500px at 10% 110%,rgba(31,169,140,.18),transparent 60%),var(--bg);
+    color:#fff;min-height:100vh}
+  header{padding:34px 24px 10px;max-width:1240px;margin:0 auto}
+  .badge{display:inline-flex;align-items:center;gap:8px;font-size:12px;letter-spacing:2px;
+    border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:6px 14px;color:#cfd6ff}
+  .badge i{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent)}
+  h1{font-size:34px;margin:16px 0 8px;font-weight:800;
+    background:linear-gradient(90deg,#fff,#b9c6ff 55%,#8ff5e6);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .sub{color:#9aa5cc;font-size:14px;line-height:1.8;max-width:660px}
+  .sub b{color:#dfe6ff}
+  .stage{max-width:1240px;margin:26px auto 60px;padding:0 24px;display:grid;
+    grid-template-columns:300px 420px 1fr;gap:28px;align-items:start}
+  @media(max-width:1100px){.stage{grid-template-columns:1fr;justify-items:center}}
+  .panel{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+    border-radius:20px;padding:20px;backdrop-filter:blur(10px)}
+  .panel h3{font-size:13px;letter-spacing:2px;color:#8f9ac4;margin-bottom:14px}
+  .nav-btn{display:flex;align-items:center;gap:12px;width:100%;text-align:left;
+    background:transparent;border:1px solid transparent;border-radius:14px;padding:12px 14px;
+    color:#c6cdea;font-size:14px;cursor:pointer;margin-bottom:8px;transition:.25s}
+  .nav-btn .ico{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;background:rgba(255,255,255,.08)}
+  .nav-btn:hover{background:rgba(255,255,255,.07)}
+  .nav-btn.active{background:var(--grad);color:#fff;box-shadow:0 8px 22px rgba(184,51,42,.4)}
+  .nav-btn small{display:block;color:inherit;opacity:.65;font-size:11px;margin-top:2px}
+  .legend{font-size:12px;color:#9aa5cc;line-height:2;border-top:1px dashed rgba(255,255,255,.15);padding-top:14px;margin-top:8px}
+  .legend b{color:#dfe6ff}
+
+  .phone{width:400px;border-radius:44px;background:#0d0f1c;border:10px solid #1b1f33;
+    box-shadow:0 40px 90px rgba(0,0,0,.6),0 0 0 2px rgba(255,255,255,.06);overflow:hidden;position:sticky;top:24px}
+  .notch{width:130px;height:26px;background:#1b1f33;border-radius:0 0 18px 18px;margin:0 auto}
+  .screen-wrap{position:relative}
+  .screen{height:740px;overflow-y:auto;background:linear-gradient(180deg,#f6f8ff 0%,#eef1fb 100%);scrollbar-width:none}
+  .screen::-webkit-scrollbar{display:none}
+
+  .mp-head{background:var(--grad);padding:16px 18px 22px;color:#fff;border-radius:0 0 26px 26px}
+  .mp-head .row1{display:flex;justify-content:space-between;align-items:center;font-size:12px;opacity:.9}
+  .greet{margin-top:14px;font-size:20px;font-weight:800}
+  .greet span{font-size:12px;font-weight:400;opacity:.85;display:block;margin-top:4px}
+  .search{margin-top:14px;background:rgba(255,255,255,.22);border-radius:12px;padding:9px 14px;font-size:13px;display:flex;gap:8px;align-items:center;color:rgba(255,255,255,.9)}
+
+  .page{display:none;padding:14px 14px 90px;animation:fade .35s ease}
+  .page.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .card{background:var(--card);border-radius:18px;padding:16px;margin-bottom:12px;box-shadow:0 6px 18px rgba(28,35,64,.06)}
+  .card h4{font-size:15px;color:var(--ink);display:flex;align-items:center;gap:8px}
+  .card h4 .tag{font-size:10px;color:var(--primary);background:#eaf0ff;border-radius:6px;padding:2px 7px;font-weight:600}
+  .card p.desc{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.7}
+  .sec-title{font-size:13px;color:#5b6480;font-weight:700;margin:6px 2px 10px;display:flex;justify-content:space-between;align-items:center}
+  .sec-title a{color:var(--primary);font-size:11px;text-decoration:none;font-weight:500}
+
+  .kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+  .kpi .k{background:#fff;border-radius:14px;padding:12px 8px;text-align:center;box-shadow:0 4px 12px rgba(28,35,64,.05)}
+  .kpi .n{font-size:19px;font-weight:800;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .kpi .l{font-size:10px;color:var(--muted);margin-top:3px}
+
+  .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+  .quick{text-align:center;padding:12px 4px;border-radius:14px;background:#fff;box-shadow:0 4px 12px rgba(28,35,64,.05);cursor:pointer;transition:.2s}
+  .quick:hover{transform:translateY(-3px)}
+  .quick .qi{width:40px;height:40px;margin:0 auto 6px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:19px}
+  .quick span{font-size:11px;color:var(--ink);font-weight:600}
+
+  .book-row{display:flex;gap:10px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+  .book-row::-webkit-scrollbar{display:none}
+  .book .cover{width:92px;height:126px;border-radius:10px;display:flex;align-items:flex-end;padding:8px;font-size:10px;color:#fff;font-weight:700;line-height:1.4;box-shadow:0 8px 16px rgba(28,35,64,.18)}
+  .book span{font-size:10px;color:var(--muted);display:block;margin-top:6px}
+  .book .match{color:var(--accent);font-weight:700}
+
+  .seat{display:grid;grid-template-columns:repeat(6,1fr);gap:7px;margin-top:10px}
+  .s{height:34px;border-radius:8px;background:#eef1fb;display:flex;align-items:center;justify-content:center;font-size:9px;color:#7c86a5;cursor:pointer;border:1.5px solid transparent;transition:.2s}
+  .s.on{background:#e2f8f3;color:#00a58f;border-color:#1FA98C;font-weight:700}
+  .s.used{background:#ffe9ee;color:#f26d92;cursor:not-allowed}
+  .seat-info{display:flex;gap:14px;font-size:10px;color:var(--muted);margin-top:10px}
+  .dot{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:4px;vertical-align:-1px}
+
+  .chat{display:flex;flex-direction:column;gap:10px;margin-top:6px}
+  .msg{max-width:78%;padding:10px 13px;border-radius:16px;font-size:12.5px;line-height:1.7}
+  .msg.bot{background:#fff;color:var(--ink);border-bottom-left-radius:4px;box-shadow:0 4px 10px rgba(28,35,64,.06)}
+  .msg.me{background:var(--grad);color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
+  .chip{display:inline-block;font-size:10.5px;border:1px solid #d8def2;color:var(--primary);border-radius:999px;padding:4px 10px;margin:4px 5px 0 0;cursor:pointer;background:#fff}
+  .chip:hover{background:#eaf0ff}
+  .inputbar{display:flex;gap:8px;margin-top:12px}
+  .inputbar input{flex:1;border:1.5px solid #dfe4f3;border-radius:12px;padding:9px 13px;font-size:12px;outline:none;background:#fff}
+  .inputbar button{border:none;background:var(--grad);color:#fff;border-radius:12px;padding:0 16px;font-size:12px;cursor:pointer}
+
+  .community-item{display:flex;gap:12px;align-items:center}
+  .c-ava{width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+  .join{margin-left:auto;border:1.5px solid var(--primary);color:var(--primary);background:#fff;border-radius:999px;font-size:11px;padding:5px 13px;cursor:pointer;transition:.2s}
+  .join.done{background:var(--primary);color:#fff}
+
+  .kg-node{display:inline-flex;align-items:center;gap:6px;background:#f4f6ff;border:1px solid #dfe5f8;color:var(--ink);font-size:11px;border-radius:999px;padding:6px 11px;margin:4px 5px 0 0}
+  .kg-node i{width:7px;height:7px;border-radius:50%}
+
+  .timeline{position:relative;padding-left:20px;margin-top:10px}
+  .timeline::before{content:"";position:absolute;left:6px;top:4px;bottom:4px;width:2px;background:linear-gradient(#B8332A,#1FA98C)}
+  .tl-item{position:relative;padding-bottom:14px}
+  .tl-item::before{content:"";position:absolute;left:-19px;top:4px;width:10px;height:10px;border-radius:50%;background:#fff;border:2.5px solid var(--primary)}
+  .tl-item b{font-size:12.5px;color:var(--ink)}
+  .tl-item span{font-size:11px;color:var(--muted);display:block;line-height:1.6;margin-top:2px}
+
+  .radar-wrap{display:flex;gap:14px;align-items:center}
+  .bar{margin-top:8px}
+  .bar .bt{display:flex;justify-content:space-between;font-size:11px;color:var(--ink);margin-bottom:4px}
+  .bar .tr{height:7px;border-radius:99px;background:#eef1fb;overflow:hidden}
+  .bar .tr i{display:block;height:100%;border-radius:99px;background:var(--grad)}
+
+  /* 数据洞察图表 */
+  .chart{margin-top:6px}
+  .bar-row{display:flex;align-items:center;gap:8px;margin:7px 0;font-size:11px;color:var(--ink)}
+  .bar-row .lab{width:88px;flex-shrink:0;text-align:right;color:#5b6480;line-height:1.2}
+  .bar-row .trk{flex:1;height:18px;background:#f1f4fc;border-radius:6px;overflow:hidden}
+  .bar-row .trk i{display:block;height:100%;border-radius:6px;background:var(--grad)}
+  .bar-row .val{width:60px;flex-shrink:0;font-weight:700;color:var(--primary)}
+  .legend-pill{display:inline-flex;align-items:center;gap:5px;font-size:10px;color:var(--muted);margin:2px 8px 0 0}
+  .legend-pill i{width:9px;height:9px;border-radius:3px}
+
+  .tabbar{position:absolute;bottom:0;left:0;right:0;background:rgba(255,255,255,.95);backdrop-filter:blur(8px);
+    display:flex;border-top:1px solid var(--line);padding:8px 6px 14px}
+  .tab{flex:1;text-align:center;font-size:10px;color:#9aa3c0;cursor:pointer;transition:.2s}
+  .tab .ti{font-size:20px;display:block;margin-bottom:2px;filter:grayscale(1);opacity:.6;transition:.2s}
+  .tab.active{color:var(--primary);font-weight:700}
+  .tab.active .ti{filter:none;opacity:1;transform:translateY(-2px)}
+
+  .feat{display:flex;gap:12px;padding:14px;border-radius:16px;background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.09);margin-bottom:12px;transition:.25s;cursor:pointer}
+  .feat:hover{background:rgba(255,255,255,.09);transform:translateX(4px)}
+  .feat .fi{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+  .feat b{font-size:14px}
+  .feat p{font-size:12px;color:#9aa5cc;line-height:1.7;margin-top:4px}
+  .feat .pill{font-size:10px;border-radius:99px;padding:2px 8px;margin-left:8px;vertical-align:2px}
+  .p-blue{background:rgba(184,51,42,.16);color:#e08a7a}
+  .p-green{background:rgba(31,169,140,.16);color:#5fcfb4}
+  .p-pink{background:rgba(224,121,156,.16);color:#f0a9c2}
+  /* 常驻 AI 馆员悬浮按钮（对话即服务） */
+  .fab{position:absolute;right:14px;bottom:80px;width:54px;height:54px;border-radius:50%;
+    background:var(--grad);color:#fff;border:none;font-size:23px;cursor:pointer;z-index:25;
+    box-shadow:0 10px 24px rgba(184,51,42,.45);display:flex;align-items:center;justify-content:center;transition:.25s}
+  .fab:hover{transform:scale(1.08) translateY(-2px)}
+  .fab small{position:absolute;top:-7px;right:-7px;background:#E0799C;color:#fff;font-size:9px;
+    border-radius:99px;padding:1px 6px;font-weight:700;line-height:1.4}
+
+  /* 二次确认弹窗（防误触 / 异常状态） */
+  .modal{position:absolute;inset:0;background:rgba(11,16,38,.5);display:none;
+    align-items:center;justify-content:center;z-index:40;backdrop-filter:blur(2px)}
+  .modal.show{display:flex;animation:fade .2s ease}
+  .modal-card{background:#fff;border-radius:20px;width:82%;max-width:320px;padding:22px 20px;text-align:center;box-shadow:0 30px 60px rgba(0,0,0,.4)}
+  .modal-card .m-ico{font-size:34px}
+  .modal-card .m-title{font-size:16px;font-weight:800;color:var(--ink);margin:8px 0 6px}
+  .modal-card .m-desc{font-size:12.5px;color:var(--muted);line-height:1.7;margin-bottom:18px}
+  .m-actions{display:flex;gap:10px}
+  .m-actions button{flex:1;border:none;border-radius:12px;padding:11px 0;font-size:13px;cursor:pointer;font-weight:700;transition:.2s}
+  .m-cancel{background:#eef1fb;color:#5b6480}
+  .m-ok{background:var(--grad);color:#fff}
+
+  /* 加载骨架（加载态） */
+  .skeleton{height:14px;border-radius:6px;background:linear-gradient(90deg,#eef1fb 25%,#e2e7f5 37%,#eef1fb 63%);
+    background-size:400% 100%;animation:sk 1.2s ease infinite;margin:8px 0}
+  @keyframes sk{0%{background-position:100% 0}100%{background-position:-100% 0}}
+
+  footer{max-width:1240px;margin:0 auto;padding:0 24px 40px;color:#6b7699;font-size:12px;line-height:1.8;text-align:center}
+  .data-banner{display:inline-flex;gap:14px;flex-wrap:wrap;margin-top:12px;font-size:12px;color:#9aa5cc}
+  .data-banner b{color:#dfe6ff}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="badge"><i></i>创新方案 · 可视化设计展示（数据驱动 UI/UX 交互原型）</div>
+  <h1>嘉庚·未来图书馆 2030</h1>
+  <p class="sub">「<b>嘉小图</b>」智慧图书馆小程序 — 高保真交互原型 <b>v3.0（实用化重构）</b>。本版**嵌入真实运营数据**（8 类、约 <b>84 万条</b>记录、累计 <b>379 万</b>入馆人次、<b>45.3 万册</b>馆藏），并按"任务流"重组信息架构：AI 馆员常驻右下角、首屏聚焦高频动作、关键操作加二次确认、补齐加载 / 确认 / 异常状态。点击左侧导航、右下角 🤖 或底部 Tab 体验。</p>
+  <div class="data-banner">
+    <span>📡 <b>门禁刷卡</b> 16.6 万次</span>
+    <span>🪑 <b>座位预约</b> 4.95 万次</span>
+    <span>🏛 <b>研讨室</b> 1.74 万次</span>
+    <span>🎓 <b>在册读者</b> 5.68 万</span>
+    <span>📚 <b>学者成果</b> 3.99 万篇</span>
+    <span>📖 <b>馆藏图书</b> 45.3 万册</span>
+  </div>
+</header>
+
+<div class="stage">
+  <!-- 左导航 -->
+  <div class="panel">
+    <h3>任 务 流 导 航</h3>
+    <button class="nav-btn active" data-page="home"><span class="ico" style="background:rgba(184,51,42,.16)">🏫</span><span>今日嘉图 · 入馆<small>真实门禁 / 入馆数据</small></span></button>
+    <button class="nav-btn" data-page="space"><span class="ico" style="background:rgba(224,138,43,.16)">🪑</span><span>智慧空间 · 找座<small>座位 4.95万 / 研讨室</small></span></button>
+    <button class="nav-btn" data-page="collection"><span class="ico" style="background:rgba(31,169,140,.16)">📚</span><span>馆藏资源 · 找书<small>45.3 万册学科构成</small></span></button>
+    <button class="nav-btn" data-page="heritage"><span class="ico" style="background:rgba(224,121,156,.16)">📜</span><span>学术成果 · 找文献<small>学者库 3.99 万篇</small></span></button>
+    <button class="nav-btn" data-page="community"><span class="ico" style="background:rgba(31,169,140,.16)">🫂</span><span>学习社群 · 备考<small>考研等 1.77 万人</small></span></button>
+    <button class="nav-btn" data-page="insight"><span class="ico" style="background:rgba(184,51,42,.16)">📊</span><span>数据洞察大屏<small>8 类数据集可视化</small></span></button>
+    <button class="nav-btn" data-page="me"><span class="ico" style="background:rgba(224,138,43,.16)">🎓</span><span>我的 · 学术画像<small>5.68 万读者构成</small></span></button>
+    <div class="legend">
+      <b>任务流 → 真实数据</b><br>
+      入馆：门禁 / 入馆人次<br>
+      找座：座位 / 研讨室预约<br>
+      找书：45.3 万册馆藏<br>
+      找文献：学者库 3.99 万篇<br>
+      连接：备考联盟 1.77 万<br>
+      🤖 <b>AI 馆员已常驻右下角</b>
+    </div>
+  </div>
+
+  <!-- 手机原型 -->
+  <div class="phone">
+    <div class="notch"></div>
+    <div class="screen-wrap">
+    <div class="screen" id="screen">
+
+      <!-- 首页 -->
+      <div class="page active" id="page-home">
+        <div class="mp-head">
+          <div class="row1"><span>9:41</span><span>嘉庚学院 · 未来馆 2030</span></div>
+          <div class="greet">早安，陈同学 ☀️
+            <span>🤖 嘉小图：依据历史入馆规律，今天 18:00 为高峰，已为你错峰预留静音位</span>
+          </div>
+          <div class="search">🔍 搜书 · 搜座位 · 搜服务，或直接问我…</div>
+        </div>
+
+        <div class="grid4" style="margin:12px 0">
+          <div class="quick" onclick="go('space')"><div class="qi" style="background:rgba(224,138,43,.16)">🪑</div><span>找座位</span></div>
+          <div class="quick" onclick="go('collection')"><div class="qi" style="background:rgba(31,169,140,.16)">📚</div><span>找书/馆藏</span></div>
+          <div class="quick" onclick="go('chat')"><div class="qi" style="background:rgba(184,51,42,.16)">🤖</div><span>问嘉小图</span></div>
+          <div class="quick" onclick="go('community')"><div class="qi" style="background:rgba(224,121,156,.16)">🫂</div><span>备考社群</span></div>
+        </div>
+
+        <div class="kpi">
+          <div class="k"><div class="n" id="k_total"></div><div class="l">累计入馆（人次）</div></div>
+          <div class="k"><div class="n" id="k_peak"></div><div class="l">每日入馆高峰</div></div>
+          <div class="k"><div class="n" id="k_dept"></div><div class="l">最活跃学院</div></div>
+        </div>
+
+        <div class="sec-title">📈 入馆时段分布 <a>近 48 天真实数据 ›</a></div>
+        <div class="card"><div class="chart" id="chart_hour"></div>
+          <p class="desc">🕒 高峰集中在 <b>12:00 午休</b> 与 <b>18:00 晚自习</b>；AI 据此做错峰引导与座位预调度。</p>
+        </div>
+
+        <div class="sec-title" style="margin-top:16px">🎯 为你精准推荐 · AI 基于画像生成</div>
+        <div class="card">
+          <div class="book-row">
+            <div class="book"><div class="cover" style="background:linear-gradient(160deg,#B8332A,#E08A2B)">人工智能<br>简史</div><span>匹配度 <b class="match">98%</b></span></div>
+            <div class="book"><div class="cover" style="background:linear-gradient(160deg,#1FA98C,#B8332A)">数据思维<br>实践</div><span>匹配度 <b class="match">95%</b></span></div>
+            <div class="book"><div class="cover" style="background:linear-gradient(160deg,#E0799C,#ff9a5c)">闽南文化<br>漫谈</div><span>匹配度 <b class="match">91%</b></span></div>
+            <div class="book"><div class="cover" style="background:linear-gradient(160deg,#E08A2B,#E0799C)">三体<br>（纪念版）</div><span>匹配度 <b class="match">88%</b></span></div>
+          </div>
+          <p class="desc">📊 推荐依据：借阅史 + 专业课图谱 + <b>45.3 万册馆藏主题</b> + 实时热点；你的学院「<span id="k_mydept">信息科学与技术学院</span>」为入馆第 <span id="k_myrank"></span> 活跃学院。</p>
+        </div>
+
+        <div class="kpi" style="margin-top:14px">
+          <div class="k"><div class="n">45.3万</div><div class="l">馆藏总量（册）</div></div>
+          <div class="k"><div class="n">92.7%</div><div class="l">中文图书占比</div></div>
+          <div class="k"><div class="n">12</div><div class="l">中图法大类覆盖</div></div>
+        </div>
+        <div class="card" onclick="go('collection')" style="cursor:pointer">
+          <h4>📚 馆藏资源画像 <span class="tag">点此查看</span></h4>
+          <p class="desc">学科 Top：文学 6.3万 · 经济 6.0万 · 政治法律 5.5万 · 工业技术 5.2万… AI 据此做「缺藏预警」与精准采编建议。</p>
+        </div>
+
+        <div class="sec-title" style="margin-top:16px">📍 馆况速览 <a onclick="go('insight')">数据洞察 ›</a></div>
+        <div class="card">
+          <h4>🔥 学院入馆热度 Top5</h4>
+          <div class="chart" id="chart_dept"></div>
+        </div>
+      </div>
+
+      <!-- AI 馆员 -->
+      <div class="page" id="page-chat">
+        <div class="mp-head">
+          <div class="row1"><span>‹ 返回</span><span>AI 虚拟馆员 · 嘉小图</span><span>⋯</span></div>
+          <div class="greet" style="font-size:16px">😊 我在听，随时为你服务
+            <span>多模态交互：文字 · 语音 · 表情 · 情感计算</span></div>
+        </div>
+        <div class="chat" id="chatBox">
+          <div class="msg bot">👋 同学好，我是嘉小图～检测到你最近在准备<span style="color:var(--primary);font-weight:700">毕业论文开题</span>，需要我帮你梳理文献综述框架吗？</div>
+          <div class="msg me">好呀，我的选题是「AI 个性化学习」</div>
+          <div class="msg bot">📖 学校学者库近十年已积累 <b style="color:var(--primary)" id="k_papers"></b> 篇成果，我为你筛出「AI+教育」相关 <b style="color:var(--primary)">42 篇</b>，要按主题聚类推送到你的阅读空间吗？</div>
+        </div>
+        <div>
+          <span class="chip" onclick="botSay('✅ 已聚类推送！另外发现你和同选题的 4 位同学生成「共研小组」，要加入吗？')">帮我聚类推送</span>
+          <span class="chip" onclick="botSay('🎧 连续学习 2.5 小时啦～去 5 楼「减压舱」听 10 分钟白噪音吧，已按高峰规律为你留位。')">我有点累了</span>
+          <span class="chip" onclick="botSay('🗂️ 已预约静音舱，并避开 18:00 入馆高峰，届时候梯机器人会在一楼接你。')">避开高峰预约</span>
+        </div>
+        <div class="inputbar">
+          <input id="chatInput" placeholder="和嘉小图聊聊…" onkeydown="if(event.key==='Enter')send()">
+          <button onclick="send()">发送</button>
+        </div>
+      </div>
+
+      <!-- 空间 -->
+      <div class="page" id="page-space">
+        <div class="mp-head">
+          <div class="row1"><span>‹ 返回</span><span>智慧空间 · 3F 心流阅读区</span><span>🗺️</span></div>
+          <div class="greet" style="font-size:16px">🪑 AI 座位管家已就位
+            <span>依据 4.95 万条真实预约，偏好：靠窗·光照·远离过道</span></div>
+        </div>
+        <div class="kpi">
+          <div class="k"><div class="n">4.95万</div><div class="l">历史预约总数</div></div>
+          <div class="k"><div class="n">5184</div><div class="l">活跃预约读者</div></div>
+          <div class="k"><div class="n">89%</div><div class="l">履约签退率</div></div>
+        </div>
+        <div class="card">
+          <h4>3F · 心流阅读区 <span class="tag">实时热力</span></h4>
+          <div class="seat" id="seatMap"></div>
+          <div class="seat-info">
+            <span><i class="dot" style="background:#e2f8f3;border:1px solid #1FA98C"></i>AI 推荐</span>
+            <span><i class="dot" style="background:#ffe9ee"></i>已占用</span>
+            <span><i class="dot" style="background:#eef1fb"></i>可选</span>
+          </div>
+        </div>
+        <div class="card">
+          <h4>🏢 楼层使用分布 <span class="tag">真实数据</span></h4>
+          <div class="chart" id="chart_floor"></div>
+          <p class="desc">🤖 2F、3F 为预约主力（占 <b>81%</b>），4F 仍有余量；AI 动态引导分流至低密楼层。</p>
+        </div>
+        <div class="card">
+          <h4>🕒 预约时段偏好</h4>
+          <div class="chart" id="chart_slot"></div>
+          <p class="desc">⏰ 午间 12:00–18:00、晚间 18:00–23:00 为双高峰，与门禁入馆曲线高度吻合。</p>
+        </div>
+        <div class="card">
+          <h4>🏛 研讨室热度 Top <span class="tag">1.74万次预约</span></h4>
+          <div class="chart" id="chart_room"></div>
+          <p class="desc">👥 单次平均 <b>2.0 人</b>组队；307/308/304 室最热门，AI 建议错峰预约冷门时段。</p>
+          <button class="join" style="border:none;background:var(--grad);color:#fff;padding:8px 18px;margin-top:6px" onclick="reserveSeat(this)">一键预约推荐位</button>
+        </div>
+      </div>
+
+      <!-- 社群 -->
+      <div class="page" id="page-community">
+        <div class="mp-head">
+          <div class="row1"><span>‹ 返回</span><span>嘉图社群 · 文化连接</span><span>🔔</span></div>
+          <div class="greet" style="font-size:16px">🫂 找到同频的人
+            <span>基于 1.77 万条备考画像的 AI 兴趣图谱撮合</span></div>
+        </div>
+        <div class="card">
+          <h4>📊 备考联盟画像 <span class="tag">1.77万人</span></h4>
+          <div class="chart" id="chart_prep"></div>
+          <p class="desc">🎯 考研 <b>13,638 人</b>（77%）为绝对主力；AI 据此自动组建「考研共研室」并匹配同专业盟友。</p>
+        </div>
+        <div class="card">
+          <h4>✨ 为你智能撮合</h4>
+          <div style="margin-top:12px">
+            <div class="community-item" style="margin-bottom:12px">
+              <div class="c-ava" style="background:#eaf0ff">🤝</div>
+              <div><b style="font-size:13px;color:var(--ink)">「AI 共研社」· 4 人</b>
+              <p class="desc" style="margin:2px 0 0">同选题跨专业小组 · 匹配度 94%</p></div>
+              <button class="join" onclick="this.classList.add('done');this.textContent='已加入'">加入</button>
+            </div>
+            <div class="community-item" style="margin-bottom:12px">
+              <div class="c-ava" style="background:#fff0f5">📚</div>
+              <div><b style="font-size:13px;color:var(--ink)">考研冲刺共读 · 32 人</b>
+              <p class="desc" style="margin:2px 0 0">基于备考画像匹配 · 剩余 3 席</p></div>
+              <button class="join" onclick="this.classList.add('done');this.textContent='已报名'">报名</button>
+            </div>
+            <div class="community-item">
+              <div class="c-ava" style="background:#e2f8f3">👴</div>
+              <div><b style="font-size:13px;color:var(--ink)">跨代际书信计划 · 校友×在校生</b>
+              <p class="desc" style="margin:2px 0 0">与 2014 级学长共读，AI 辅助代际对话</p></div>
+              <button class="join" onclick="this.classList.add('done');this.textContent='已加入'">加入</button>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <h4>🎙 AIGC 阅读推广 <span class="tag">共创中</span></h4>
+          <p class="desc">本周 AI 播客《三分钟荐一本书》由读者+AI 联合创作，你的书评将自动改编为荐书短视频。</p>
+        </div>
+      </div>
+
+      <!-- 学者/特藏 -->
+      <div class="page" id="page-heritage">
+        <div class="mp-head">
+          <div class="row1"><span>‹ 返回</span><span>学术成果 · 数字人文</span><span>🌐</span></div>
+          <div class="greet" style="font-size:16px">📜 让研究灵感流动
+            <span>学者库 3.99 万篇成果 · AI 知识图谱</span></div>
+        </div>
+        <div class="kpi">
+          <div class="k"><div class="n">3.99万</div><div class="l">论文成果</div></div>
+          <div class="k"><div class="n" id="k_yfirst"></div><div class="l">起始年份</div></div>
+          <div class="k"><div class="n" id="k_ylast"></div><div class="l">最新年份</div></div>
+        </div>
+        <div class="card">
+          <h4>📈 成果产出趋势 <span class="tag">AI 构建</span></h4>
+          <div class="chart" id="chart_year"></div>
+          <p class="desc">🧠 2011 年 539 篇 → 2020 年 2,447 篇，十年增长 <b id="k_growth"></b> 倍；AI 据趋势预测你的选题热点。</p>
+        </div>
+        <div class="card">
+          <h4>🏆 高频发表期刊 Top</h4>
+          <div class="chart" id="chart_journal"></div>
+          <p class="desc">🔗 点选期刊即可在「嘉小图」内一键追踪该刊最新录用与本校作者。</p>
+        </div>
+        <div class="card">
+          <h4>🕸 学科知识图谱</h4>
+          <div style="margin-top:10px">
+            <span class="kg-node"><i style="background:#B8332A"></i>海洋环境</span>
+            <span class="kg-node"><i style="background:#1FA98C"></i>材料科学</span>
+            <span class="kg-node"><i style="background:#E0799C"></i>人工智能</span>
+            <span class="kg-node"><i style="background:#E08A2B"></i>机器学习</span>
+            <span class="kg-node"><i style="background:#ff9a5c"></i>化学</span>
+            <span class="kg-node"><i style="background:#B8332A"></i>数学</span>
+          </div>
+          <p class="desc">🧠 论文经 AI 抽取主题词后自动关联，输入选题即生成「相关学者+文献+期刊」导航图。</p>
+          <button class="join" style="border:none;background:var(--grad);color:#fff;padding:8px 18px;margin-top:6px" onclick="alert('AI 已为你生成「AI 个性化学习」选题导航：相关学者 12 人 / 文献 42 篇 / 期刊 6 本')">生成我的选题图谱</button>
+        </div>
+      </div>
+
+      <!-- 馆藏资源画像 -->
+      <div class="page" id="page-collection">
+        <div class="mp-head">
+          <div class="row1"><span>‹ 返回</span><span>馆藏资源画像 · 2030</span><span>📚</span></div>
+          <div class="greet" style="font-size:16px">📚 45.3 万册的「家底」
+            <span>基于真实馆藏目录 · AI 智能采编与缺藏预警</span></div>
+        </div>
+        <div class="kpi">
+          <div class="k"><div class="n">45.3万</div><div class="l">馆藏总量</div></div>
+          <div class="k"><div class="n">1900–2022</div><div class="l">出版年跨度</div></div>
+          <div class="k"><div class="n">2005</div><div class="l">平均出版年</div></div>
+        </div>
+        <div class="card">
+          <h4>🌐 语言 / 文献类型构成</h4>
+          <div class="chart" id="b_lang"></div>
+          <p class="desc">🗣 中文图书占 92.7%（42.0 万册），西文 3.0 万册、日文 2,200 册；AI 按读者外语需求动态补藏原版资源。</p>
+        </div>
+        <div class="card">
+          <h4>🏷 中图法学科分布 Top <span class="tag">真实馆藏</span></h4>
+          <div class="chart" id="b_class"></div>
+          <p class="desc">📖 文学、经济、政治法律、工业技术为四大馆藏支柱；AI 识别「人工智能/数据科学」类近年增速最快，已生成采编优先级。</p>
+        </div>
+        <div class="card">
+          <h4>📈 入藏年代趋势 <span class="tag">1949 后</span></h4>
+          <div class="chart" id="b_decade"></div>
+          <p class="desc">🕰 2000s 入藏 16.6 万、2010s 达 20.9 万（峰值）；AI 据此识别「近五年新书占比偏低」并建议加大当年新书采购。</p>
+        </div>
+        <div class="card">
+          <h4>🏛 核心出版社 Top</h4>
+          <div class="chart" id="b_pub"></div>
+        </div>
+        <div class="card">
+          <h4>✍ 馆藏高频作者 Top</h4>
+          <div class="chart" id="b_author"></div>
+          <p class="desc">🤖 鲁迅、季羡林、林语堂、老舍等经典作家馆藏丰厚；AI 可一键生成「嘉庚必读百书单」推送给新生。</p>
+          <button class="join" style="border:none;background:var(--grad);color:#fff;padding:8px 18px;margin-top:6px" onclick="genReading(this)">生成嘉庚必读百书单</button>
+        </div>
+      </div>
+
+      <!-- 数据洞察大屏 -->
+      <div class="page" id="page-insight">
+        <div class="mp-head">
+          <div class="row1"><span>‹ 返回</span><span>数据洞察大屏 · 2030</span><span>📡</span></div>
+          <div class="greet" style="font-size:16px">📊 真实数据驱动决策
+            <span>8 类数据集 · 约 84 万条记录实时汇聚</span></div>
+        </div>
+        <div class="kpi">
+          <div class="k"><div class="n">379.3万</div><div class="l">累计入馆人次</div></div>
+          <div class="k"><div class="n">11,127</div><div class="l">门禁唯一读者</div></div>
+          <div class="k"><div class="n">5.68万</div><div class="l">在册读者</div></div>
+        </div>
+        <div class="card">
+          <h4>🚪 入馆时段分布（真实）</h4>
+          <div class="chart" id="i_hour"></div>
+          <p class="desc">高峰 18:00（1.94万次）、12:00（1.51万次）；AI 以此时序做错峰与排班。</p>
+        </div>
+        <div class="card">
+          <h4>🏢 学院入馆总人次 Top</h4>
+          <div class="chart" id="i_dept"></div>
+          <p class="desc">国际商务学院以 68.2 万次大幅领先；AI 据此差异化配置学科资源。</p>
+        </div>
+        <div class="card">
+          <h4>🪑 座位 × 研讨室 使用</h4>
+          <div class="chart" id="i_floor"></div>
+          <div class="chart" id="i_room" style="margin-top:14px"></div>
+        </div>
+        <div class="card">
+          <h4>🎓 读者性别构成</h4>
+          <div class="chart" id="i_gender"></div>
+        </div>
+        <div class="card">
+          <h4>📚 馆藏学科分布 Top（45.3 万册）</h4>
+          <div class="chart" id="i_class"></div>
+          <p class="desc">文学 / 经济 / 政治法律 / 工业技术为四大支柱；AI 据此做学科资源均衡度诊断。</p>
+        </div>
+        <div class="card">
+          <h4>📈 馆藏入藏年代趋势</h4>
+          <div class="chart" id="i_decade"></div>
+        </div>
+      </div>
+
+      <!-- 我的 -->
+      <div class="page" id="page-me">
+        <div class="mp-head">
+          <div class="row1"><span>9:41</span><span>我的 · 学术画像</span></div>
+          <div class="greet" style="font-size:16px">🎓 大三 · 软件工程
+            <span>全生命周期陪伴第 3 年 · 基于真实读者库</span></div>
+        </div>
+        <div class="kpi">
+          <div class="k"><div class="n">5.68万</div><div class="l">在册本科生</div></div>
+          <div class="k"><div class="n">55%</div><div class="l">女生占比</div></div>
+          <div class="k"><div class="n" id="k_mepeak"></div><div class="l">单人最高入馆</div></div>
+        </div>
+        <div class="card">
+          <h4>📈 学术能力画像 <span class="tag">AI 生成</span></h4>
+          <div class="radar-wrap" style="margin-top:8px">
+            <svg width="110" height="110" viewBox="0 0 100 100">
+              <polygon points="50,8 90,30 90,70 50,92 10,70 10,30" fill="#eef1fb"/>
+              <polygon points="50,16 78,34 74,66 50,84 22,64 26,34" fill="rgba(184,51,42,.25)" stroke="#B8332A" stroke-width="2"/>
+              <text x="50" y="10" font-size="7" text-anchor="middle" fill="#8a93b2">检索</text>
+              <text x="92" y="32" font-size="7" fill="#8a93b2">写作</text>
+              <text x="92" y="72" font-size="7" fill="#8a93b2">数据</text>
+              <text x="50" y="98" font-size="7" text-anchor="middle" fill="#8a93b2">协作</text>
+              <text x="8" y="72" font-size="7" fill="#8a93b2">表达</text>
+              <text x="8" y="32" font-size="7" fill="#8a93b2">阅读</text>
+            </svg>
+            <div style="flex:1">
+              <div class="bar"><div class="bt"><span>文献检索力</span><span>Top 8%</span></div><div class="tr"><i style="width:88%"></i></div></div>
+              <div class="bar"><div class="bt"><span>跨学科连接</span><span>Top 15%</span></div><div class="tr"><i style="width:76%"></i></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <h4>🏫 校友入馆榜（真实 Top5）</h4>
+          <div class="chart" id="chart_topreaders"></div>
+          <p class="desc">🏅 榜首 CHN20019 累计入馆 <b>3,862 次</b>；你的目标是成为「嘉图常驻学者」吗？</p>
+        </div>
+        <div class="card">
+          <h4>🕰 你的嘉图旅程</h4>
+          <div class="timeline">
+            <div class="tl-item"><b>2027 · 入学 🌱</b><span>新生游戏化入馆教育 · 解锁「图书馆新手勋章」</span></div>
+            <div class="tl-item"><b>2028 · 成长 📚</b><span>阅读 86 本 · 生成首份学术画像 · 加入 2 个共研社群</span></div>
+            <div class="tl-item"><b>2030 · 现在 ✨</b><span>毕业论文 AI 伴写中 · 文献综述完成 60%</span></div>
+            <div class="tl-item"><b>毕业之后 🌊</b><span>学术成果智能汇编 → 链上确权 → 生成你的「知识遗产」永久保存</span></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="tabbar">
+      <div class="tab active" data-page="home" onclick="go('home')"><span class="ti">🏠</span>首页</div>
+      <div class="tab" data-page="space" onclick="go('space')"><span class="ti">🪑</span>空间</div>
+      <div class="tab" data-page="chat" onclick="go('chat')"><span class="ti">🤖</span>嘉小图</div>
+      <div class="tab" data-page="community" onclick="go('community')"><span class="ti">🫂</span>社群</div>
+      <div class="tab" data-page="me" onclick="go('me')"><span class="ti">🎓</span>我的</div>
+    </div>
+    <button class="fab" onclick="go('chat')" title="随时唤起 AI 馆员">🤖<small>在线</small></button>
+    <div class="modal" id="modal" onclick="if(event.target===this)closeModal()">
+      <div class="modal-card">
+        <div class="m-ico" id="mIco">✅</div>
+        <div class="m-title" id="mTitle">请确认</div>
+        <div class="m-desc" id="mDesc"></div>
+        <div class="m-actions">
+          <button class="m-cancel" onclick="closeModal()">再想想</button>
+          <button class="m-ok" id="mOk" onclick="confirmModal()">确认</button>
+        </div>
+      </div>
+    </div>
+    </div>
+  </div>
+
+  <!-- 右说明 -->
+  <div class="panel">
+    <h3>设 计 说 明 · 真 实 数 据 驱 动</h3>
+    <div class="feat" onclick="go('chat')"><div class="fi" style="background:rgba(184,51,42,.18)">🤖</div>
+      <div><b>AI 虚拟馆员「嘉小图」<span class="pill p-blue">智慧读者服务</span></b>
+      <p>大模型虚拟馆员，情感计算+多模态交互；接入学者库 3.99 万篇成果做科研辅助与文献综述。<b style="color:#B8332A">现已常驻右下角悬浮按钮，对话即服务。</b></p></div></div>
+    <div class="feat" onclick="go('home')"><div class="fi" style="background:rgba(31,169,140,.16)">📈</div>
+      <div><b>入馆规律智能预测<span class="pill p-green">数据洞察</span></b>
+      <p>门禁 16.6 万次刷卡 + 379.3 万入馆人次，识别 12:00/18:00 双高峰，驱动错峰引导与排班。</p></div></div>
+    <div class="feat" onclick="go('space')"><div class="fi" style="background:rgba(184,51,42,.18)">🪑</div>
+      <div><b>座位与研讨室智能调度<span class="pill p-blue">空间服务</span></b>
+      <p>4.95 万条座位预约、1.74 万次研讨室签到，AI 动态分流低密楼层、错峰推荐冷门时段。</p></div></div>
+    <div class="feat" onclick="go('community')"><div class="fi" style="background:rgba(31,169,140,.16)">🫂</div>
+      <div><b>备考联盟社群撮合<span class="pill p-green">文化社群连接</span></b>
+      <p>1.77 万条备考画像（考研 77%）；AI 兴趣图谱匹配同专业盟友，组建考研共研室。</p></div></div>
+    <div class="feat" onclick="go('heritage')"><div class="fi" style="background:rgba(255,92,138,.16)">📜</div>
+      <div><b>学术成果知识图谱<span class="pill p-pink">前沿技术应用</span></b>
+      <p>学者库 3.99 万篇论文经 AI 抽取主题词，构建学科图谱；选题即生成学者+文献+期刊导航。</p></div></div>
+    <div class="feat" onclick="go('collection')"><div class="fi" style="background:rgba(31,169,140,.16)">📚</div>
+      <div><b>馆藏资源智能画像<span class="pill p-green">问题洞察</span></b>
+      <p>45.3 万册真实馆藏：中图法学科分布、入藏年代、语言构成；AI 做缺藏预警与精准采编建议。</p></div></div>
+    <div class="feat" onclick="go('insight')"><div class="fi" style="background:rgba(224,138,43,.18)">📊</div>
+      <div><b>数据洞察大屏<span class="pill p-blue">可行性支撑</span></b>
+      <p>8 类真实数据集可视化，证明方案"有数据、可落地"，强化创新方案可行性分析章节。</p></div></div>
+  </div>
+</div>
+
+<footer>
+  参赛方向：设计 2030 年的嘉庚学院图书馆 · 可视化设计展示（数据驱动 UI/UX 交互原型）<br>
+  数据来源：门禁刷卡 / 门禁入馆人次 / 座位预约 / 研讨室预约 / 备考联盟 / 读者数据 / 学者库数据 / 馆藏目录（8 类，约 84 万条记录，累计入馆 379 万人次、馆藏 45.3 万册，为历史运营数据，用于原型演示与可行性论证）。
+</footer>
+
+<script>
+/* ===== 真实数据（由上传文件统计得出） ===== */
+const DATA = {
+  swipe:{ readers:11127, gender:{F:91605,M:74051},
+    hour:{6:119,7:5802,8:9331,9:13948,10:6115,11:9447,12:15100,13:11398,14:13297,15:8891,16:14447,17:8129,18:19380,19:14086,20:6452,21:8305,22:1377,23:32},
+    topDept:[['国际商务学院',30321],['人文与传播学院',19870],['法学院',18514],['管理学院',16789],['设计与创意学院',16265],['环境科学与工程学院',12127],['信息科学与技术学院',10798],['机电工程与自动化学院',6486]]
+  },
+  entry:{ total:3792730, topReaders:[['CHN20019',3862],['BNK20025',3186],['OIE20005',3142],['TRM20006',3043],['ENG20036',2968]],
+    topDept:[['国际商务学院',682216],['人文与传播学院',477673],['法学院',411404],['管理学院',385922],['设计与创意学院',372394],['环境科学与工程学院',268227],['信息科学与技术学院',262773],['机电工程与自动化学院',151652]] },
+  seat:{ floor:[['2楼',20389],['3楼',19813],['4楼',9264]],
+    slot:[['12:00-18:00',20534],['18:00-23:00',16344],['07:00-12:00',12588]] },
+  seminar:{ rooms:[['307室',3197],['308室',3029],['304室',2911],['310室',2505],['305室',2456]] },
+  prep:{ types:[['考研',13638],['考公务员',3024],['司法考试',896],['考雅思托福',112]] },
+  reader:{ gender:{F:31409,M:25408} },
+  scholar:{ yearMin:2011, yearMax:2020,
+    year:{2011:539,2012:680,2013:861,2014:1152,2015:1606,2016:1979,2017:2178,2018:2280,2019:2234,2020:2447},
+    journal:[['SCIENTIFIC REPORTS',326],['Advanced Materials Research',307],['PLOS ONE',266],['ACS Appl. Mater. Interfaces',222],['Applied Mechanics and Materials',212],['IEEE Access',198],['CHEMICAL COMMUNICATIONS',196]] },
+  book:{ total:453233,
+    lang:[['中文',419217],['英语',31171],['日语',2002],['法语',253],['德语',250],['俄语',72]],
+    class:[['文学',63470],['经济',59811],['政治法律',55248],['工业技术',51981],['历史地理',43972],['语言文字',31579],['哲学宗教',26359],['文教体育',23122],['艺术',22455],['数理化学',22237],['医药卫生',14607],['社科总论',13600]],
+    decade:[['2010s',209213],['2000s',165537],['1990s',35290],['1980s',26823],['1970s',7385],['1960s',4221],['1950s',2969]],
+    publisher:[['科学出版社',13923],['清华大学出版社',13642],['北京大学出版社',10502],['机械工业出版社',9384],['中国人民大学出版社',8728],['高等教育出版社',8408],['中国社会科学出版社',8078],['电子工业出版社',7044],['法律出版社',6771],['社会科学文献出版社',6447]],
+    author:[['鲁迅',208],['季羡林',165],['林语堂',148],['老舍',140],['阿加莎·克里斯蒂',139],['贾平凹',125],['胡适',124],['梁启超',123],['毕淑敏',120],['中国法制出版社',115]] }
+};
+
+/* ===== 图表渲染 ===== */
+function barH(id, data, fmt){
+  const max = Math.max(...data.map(d=>d[1]));
+  document.getElementById(id).innerHTML = data.map(d=>{
+    const pct = (d[1]/max*100).toFixed(1);
+    const val = fmt? fmt(d[1]) : d[1].toLocaleString();
+    return `<div class="bar-row"><div class="lab">${d[0]}</div><div class="trk"><i style="width:${pct}%"></i></div><div class="val">${val}</div></div>`;
+  }).join('');
+}
+function lineChart(id, obj){
+  const keys = Object.keys(obj), vals = keys.map(k=>obj[k]);
+  const max = Math.max(...vals), w=320, h=110, pad=6;
+  const step = (w-pad*2)/(keys.length-1);
+  const pts = vals.map((v,i)=>[pad+i*step, h-pad-(v/max)*(h-pad*2)]);
+  const poly = pts.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ');
+  const area = `${pad},${h-pad} ${poly} ${(w-pad).toFixed(1)},${h-pad}`;
+  let lg='';
+  pts.forEach((p,i)=>{ if(i%2===0||i===keys.length-1) lg+=`<text x="${p[0].toFixed(1)}" y="${h+2}" font-size="8" fill="#9aa3c0" text-anchor="middle">${keys[i].slice(2)}</text>`; });
+  document.getElementById(id).innerHTML =
+    `<svg viewBox="0 0 ${w} ${h+14}" width="100%" preserveAspectRatio="none">
+      <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgba(184,51,42,.35)"/><stop offset="1" stop-color="rgba(184,51,42,0)"/></linearGradient></defs>
+      <polygon points="${area}" fill="url(#g)"/>
+      <polyline points="${poly}" fill="none" stroke="#B8332A" stroke-width="2.5"/>
+      ${pts.map(p=>`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="2.6" fill="#E08A2B"/>`).join('')}
+      ${lg}
+    </svg>`;
+}
+
+/* ===== 导航 ===== */
+const pages=document.querySelectorAll('.page'), tabs=document.querySelectorAll('.tab'), navs=document.querySelectorAll('.nav-btn');
+function go(name){
+  pages.forEach(p=>p.classList.toggle('active',p.id==='page-'+name));
+  tabs.forEach(t=>t.classList.toggle('active',t.dataset.page===name));
+  navs.forEach(n=>n.classList.toggle('active',n.dataset.page===name));
+  document.getElementById('screen').scrollTop=0;
+}
+navs.forEach(n=>n.addEventListener('click',()=>go(n.dataset.page)));
+
+/* ===== 填充真实数据 ===== */
+function fillData(){
+  document.getElementById('k_total').textContent = (DATA.entry.total/10000).toFixed(1)+'万';
+  const hp = Object.entries(DATA.swipe.hour).sort((a,b)=>b[1]-a[1])[0];
+  document.getElementById('k_peak').textContent = hp[0]+':00';
+  document.getElementById('k_dept').textContent = DATA.swipe.topDept[0][0].slice(0,4);
+  document.getElementById('k_myrank').textContent = DATA.swipe.topDept.findIndex(d=>d[0]==='信息科学与技术学院')+1;
+  document.getElementById('k_papers').textContent = '3.99 万';
+  document.getElementById('k_yfirst').textContent = DATA.scholar.yearMin;
+  document.getElementById('k_ylast').textContent = DATA.scholar.yearMax;
+  const g0=DATA.scholar.year[2011], g1=DATA.scholar.year[2020];
+  document.getElementById('k_growth').textContent = (g1/g0).toFixed(1);
+  document.getElementById('k_mepeak').textContent = DATA.entry.topReaders[0][1]+'次';
+
+  barH('chart_hour', Object.entries(DATA.swipe.hour).map(([k,v])=>[k+':00',v]));
+  barH('chart_dept', DATA.swipe.topDept.slice(0,5), v=>v.toLocaleString());
+  barH('chart_floor', DATA.seat.floor);
+  barH('chart_slot', DATA.seat.slot);
+  barH('chart_room', DATA.seminar.rooms);
+  barH('chart_prep', DATA.prep.types);
+  barH('chart_journal', DATA.scholar.journal);
+  barH('chart_topreaders', DATA.entry.topReaders.map(([k,v])=>[k,v]));
+
+  lineChart('chart_year', DATA.scholar.year);
+
+  // 洞察大屏
+  document.getElementById('i_hour') && barH('i_hour', Object.entries(DATA.swipe.hour).map(([k,v])=>[k+':00',v]));
+  document.getElementById('i_dept') && barH('i_dept', DATA.entry.topDept.slice(0,6).map(([k,v])=>[k,v/10000+'万']));
+  document.getElementById('i_floor') && barH('i_floor', DATA.seat.floor);
+  document.getElementById('i_room') && barH('i_room', DATA.seminar.rooms);
+  document.getElementById('i_gender') && barH('i_gender', [['女 '+DATA.reader.gender.F.toLocaleString(),DATA.reader.gender.F],['男 '+DATA.reader.gender.M.toLocaleString(),DATA.reader.gender.M]]);
+  document.getElementById('i_class') && barH('i_class', DATA.book.class.slice(0,8).map(([k,v])=>[k,v/10000+'万']));
+  document.getElementById('i_decade') && barH('i_decade', DATA.book.decade);
+
+  // 馆藏资源
+  document.getElementById('b_lang') && barH('b_lang', DATA.book.lang.map(([k,v])=>[k+' '+v.toLocaleString(),v]));
+  document.getElementById('b_class') && barH('b_class', DATA.book.class.slice(0,8).map(([k,v])=>[k,v/10000+'万']));
+  document.getElementById('b_decade') && barH('b_decade', DATA.book.decade);
+  document.getElementById('b_pub') && barH('b_pub', DATA.book.publisher);
+  document.getElementById('b_author') && barH('b_author', DATA.book.author);
+}
+
+/* ===== 座位图 ===== */
+const seatMap=document.getElementById('seatMap');
+const recommend=['A05','A12','B03','B07','C02'];
+for(let i=0;i<24;i++){
+  const s=document.createElement('div');
+  const id=String.fromCharCode(65+Math.floor(i/8))+(String(i%8+1).padStart(2,'0'));
+  if(i%5===2){s.className='s used';s.textContent='占用';}
+  else if(recommend.includes(id)){s.className='s on';s.textContent=id+'✨';s.onclick=()=>{document.querySelectorAll('.s').forEach(x=>x.style.outline='');s.style.outline='2.5px solid #1FA98C';};}
+  else{s.className='s';s.textContent=id;s.onclick=()=>{document.querySelectorAll('.s').forEach(x=>x.style.outline='');s.style.outline='2.5px solid #B8332A';};}
+  seatMap.appendChild(s);
+}
+
+/* ===== AI 对话 ===== */
+const chatBox=document.getElementById('chatBox');
+function push(text,who){const d=document.createElement('div');d.className='msg '+who;d.textContent=text;chatBox.appendChild(d);document.getElementById('screen').scrollTop=99999;}
+function send(){const inp=document.getElementById('chatInput');if(!inp.value.trim())return;push(inp.value,'me');inp.value='';
+  const t=push('嘉小图正在输入…','bot'); t.style.opacity=.55;
+  setTimeout(()=>{t.remove();const r=['🔍 已在学校学者库 3.99 万篇成果里为你筛出相关文献，并标注 3 篇高被引。',
+    '💡 结合你学院的入馆规律（高峰 18:00），建议把深度学习改在上午做，下午留给组会。',
+    '🤝 已匹配到 2 位同选题同学，他们近期也常驻 3F，要我牵线建共研群吗？',
+    '📊 该选题文献近十年增长 4.5 倍，是上升热点！我为你画了趋势图。'];push(r[Math.floor(Math.random()*r.length)],'bot');},600);}
+function botSay(t){push(t,'bot');}
+
+/* ===== 二次确认弹窗（防误触 / 异常状态） ===== */
+let modalCb=null;
+function showConfirm(ico,title,desc,cb){
+  document.getElementById('mIco').textContent=ico;
+  document.getElementById('mTitle').textContent=title;
+  document.getElementById('mDesc').textContent=desc;
+  modalCb=cb; document.getElementById('modal').classList.add('show');
+}
+function closeModal(){document.getElementById('modal').classList.remove('show');modalCb=null;}
+function confirmModal(){const cb=modalCb;closeModal();if(cb)cb();}
+function reserveSeat(btn){
+  showConfirm('🪑','确认预约该座位？','已为你智能推荐 <b>A12 靠窗静音位</b>，并自动避开 18:00 入馆高峰。确认后将为该座位加锁，爽约将影响信用分。',()=>{btn.textContent='✅ 已预约 A12 靠窗位';});
+}
+function genReading(btn){
+  showConfirm('📚','生成并推送书单？','AI 将基于鲁迅、季羡林等高频作者与新生画像，生成《嘉庚必读 100 本》并推送至 2027 级新生。',()=>{btn.textContent='✅ 已生成并推送新生';});
+}
+
+fillData();
+</script>
+</body>
+</html>
