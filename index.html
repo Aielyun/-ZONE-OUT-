@@ -65,14 +65,13 @@
   .phone-modal .pm-close:hover{background:rgba(255,255,255,.28);transform:rotate(90deg)}
   @media(max-width:480px){
     .phone{width:100%;max-width:380px}
-    .screen{height:70vh;max-height:720px}
   }
 
   .phone{width:400px;border-radius:44px;background:#0d0f1c;border:10px solid #1b1f33;
     box-shadow:0 40px 90px rgba(0,0,0,.6),0 0 0 2px rgba(255,255,255,.06);overflow:hidden;position:relative}
   .notch{width:130px;height:26px;background:#1b1f33;border-radius:0 0 18px 18px;margin:0 auto}
   .screen-wrap{position:relative}
-  .screen{height:740px;overflow-y:auto;background:linear-gradient(180deg,#f6f8ff 0%,#eef1fb 100%);scrollbar-width:none}
+  .screen{height:min(740px,calc(100vh - 110px));overflow-y:auto;background:linear-gradient(180deg,#f6f8ff 0%,#eef1fb 100%);scrollbar-width:none}
   .screen::-webkit-scrollbar{display:none}
 
   .mp-head{background:var(--grad);padding:16px 18px 22px;color:#fff;border-radius:0 0 26px 26px}
@@ -124,6 +123,58 @@
   .inputbar{display:flex;gap:8px;margin-top:12px}
   .inputbar input{flex:1;border:1.5px solid #dfe4f3;border-radius:12px;padding:9px 13px;font-size:12px;outline:none;background:#fff}
   .inputbar button{border:none;background:var(--grad);color:#fff;border-radius:12px;padding:0 16px;font-size:12px;cursor:pointer}
+
+  /* ===== 嘉小图增强：会话 / 卡片 / 流式 / 语音 ===== */
+  .chat-tools{display:flex;align-items:center;gap:8px;margin:10px 2px 0}
+  .save-hint{font-size:10px;color:#9aa3c0;margin-right:auto}
+  .chat-tools button{border:1px solid #dfe4f3;background:#fff;color:#5b6480;border-radius:999px;
+    font-size:10.5px;padding:5px 11px;cursor:pointer;transition:.2s}
+  .chat-tools button:hover{background:#eaf0ff;color:var(--primary)}
+  .quick-q{display:flex;gap:6px;overflow-x:auto;margin-top:14px;padding-bottom:2px;scrollbar-width:none}
+  .quick-q::-webkit-scrollbar{display:none}
+  .quick-q .chip{flex-shrink:0;margin:0;white-space:nowrap}
+  .msg.card{max-width:100%;padding:12px}
+  .rc-head{font-size:11px;color:var(--muted);margin-bottom:6px}
+  .rc-item{display:flex;gap:9px;align-items:center;padding:9px 0;border-top:1px dashed #eceef6}
+  .rc-item:first-child{border-top:none;padding-top:2px}
+  .rc-cover{width:36px;height:48px;border-radius:7px;flex-shrink:0;display:flex;align-items:flex-end;
+    padding:4px;font-size:8px;line-height:1.2;color:#fff;font-weight:700}
+  .rc-info{flex:1;min-width:0}
+  .rc-info b{display:block;font-size:12.5px;color:var(--ink);margin-bottom:2px}
+  .rc-info span{display:block;font-size:10.5px;color:var(--muted);line-height:1.5}
+  .rc-btn{border:none;background:var(--grad);color:#fff;border-radius:9px;font-size:11px;
+    padding:6px 12px;cursor:pointer;flex-shrink:0;transition:.2s}
+  .rc-btn.done{background:#eef1fb;color:#5b6480;cursor:default}
+  .typing{display:flex;gap:4px;align-items:center;padding:14px;min-height:38px}
+  .typing span{width:6px;height:6px;border-radius:50%;background:#c3cbe4;animation:blink 1.2s infinite}
+  .typing span:nth-child(2){animation-delay:.2s}
+  .typing span:nth-child(3){animation-delay:.4s}
+  @keyframes blink{0%,100%{opacity:.35;transform:translateY(0)}50%{opacity:1;transform:translateY(-3px)}}
+  .caret{display:inline-block;width:2px;height:12px;background:var(--primary);vertical-align:-2px;
+    margin-left:2px;animation:blink2 .8s steps(2) infinite}
+  @keyframes blink2{0%,100%{opacity:1}50%{opacity:0}}
+  .stop-chip{display:none;margin-top:10px;border:1px solid #dfe4f3;background:#fff;color:#5b6480;
+    border-radius:999px;font-size:10.5px;padding:5px 12px;cursor:pointer}
+  .stop-chip.show{display:inline-block}
+  .inputbar .mic{border:none;background:#eef1fb;color:#5b6480;border-radius:12px;width:38px;
+    padding:0;font-size:15px;cursor:pointer;flex-shrink:0;transition:.2s}
+  .inputbar .mic.on{background:var(--grad);color:#fff}
+  .voice-ov{position:absolute;inset:0;z-index:60;background:rgba(11,16,38,.62);display:none;
+    flex-direction:column;align-items:center;justify-content:center;gap:16px}
+  .voice-ov.show{display:flex}
+  .voice-wave{display:flex;gap:4px;align-items:center;height:46px}
+  .voice-wave i{width:4px;height:12px;border-radius:2px;background:#fff;animation:wv .9s ease-in-out infinite}
+  .voice-wave i:nth-child(2){animation-delay:.1s}
+  .voice-wave i:nth-child(3){animation-delay:.2s}
+  .voice-wave i:nth-child(4){animation-delay:.3s}
+  .voice-wave i:nth-child(5){animation-delay:.4s}
+  .voice-wave i:nth-child(6){animation-delay:.5s}
+  .voice-wave i:nth-child(7){animation-delay:.6s}
+  .voice-wave i:nth-child(8){animation-delay:.7s}
+  .voice-wave i:nth-child(9){animation-delay:.8s}
+  @keyframes wv{0%,100%{height:10px;opacity:.6}50%{height:40px;opacity:1}}
+  .voice-tip{color:#fff;font-size:12.5px;letter-spacing:1px}
+  .voice-text{color:#cfd6ff;font-size:12px;max-width:74%;text-align:center;line-height:1.7;min-height:20px}
 
   .community-item{display:flex;gap:12px;align-items:center}
   .c-ava{width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
@@ -288,21 +339,26 @@
       <!-- AI 馆员 -->
       <div class="page" id="page-chat">
         <div class="mp-head">
-          <div class="row1"><span>‹ 返回</span><span>AI 虚拟馆员 · 嘉小图</span><span>⋯</span></div>
+          <div class="row1"><span>‹ 返回</span><span>AI 虚拟馆员 · 嘉小图</span><span>✨</span></div>
           <div class="greet" style="font-size:16px">😊 我在听，随时为你服务
-            <span>多模态交互：文字 · 语音 · 表情 · 情感计算</span></div>
+            <span>找书 · 查座 · 文献推荐 · 入馆数据 · 语音对话</span></div>
         </div>
-        <div class="chat" id="chatBox">
-          <div class="msg bot">👋 同学好，我是嘉小图～检测到你最近在准备<span style="color:var(--primary);font-weight:700">毕业论文开题</span>，需要我帮你梳理文献综述框架吗？</div>
-          <div class="msg me">好呀，我的选题是「AI 个性化学习」</div>
-          <div class="msg bot">📖 学校学者库近十年已积累 <b style="color:var(--primary)" id="k_papers"></b> 篇成果，我为你筛出「AI+教育」相关 <b style="color:var(--primary)">42 篇</b>，要按主题聚类推送到你的阅读空间吗？</div>
+        <div class="chat-tools">
+          <span class="save-hint" id="saveHint">💾 对话已自动保存</span>
+          <button onclick="clearChat()">🗑 清空</button>
         </div>
-        <div>
-          <span class="chip" onclick="botSay('✅ 已聚类推送！另外发现你和同选题的 4 位同学生成「共研小组」，要加入吗？')">帮我聚类推送</span>
-          <span class="chip" onclick="botSay('🎧 连续学习 2.5 小时啦～去 5 楼「减压舱」听 10 分钟白噪音吧，已按高峰规律为你留位。')">我有点累了</span>
-          <span class="chip" onclick="botSay('🗂️ 已预约静音舱，并避开 18:00 入馆高峰，届时候梯机器人会在一楼接你。')">避开高峰预约</span>
+        <div class="chat" id="chatBox"></div>
+        <div class="quick-q" id="quickQ">
+          <span class="chip" onclick="ask('帮我找一本人工智能的书')">📚 找一本书</span>
+          <span class="chip" onclick="ask('现在图书馆人多吗')">👥 现在人多吗</span>
+          <span class="chip" onclick="ask('有没有安静的空座位')">🪑 查空座位</span>
+          <span class="chip" onclick="ask('帮我推荐几篇文献')">📄 推荐文献</span>
+          <span class="chip" onclick="ask('考研的人多不多')">🎯 考研数据</span>
+          <span class="chip" onclick="ask('我有点累了')">🎧 我有点累</span>
         </div>
+        <button class="stop-chip" id="stopChip" onclick="stopStream()">■ 停止生成</button>
         <div class="inputbar">
+          <button class="mic" id="micBtn" onclick="startVoice()" title="语音输入">🎤</button>
           <input id="chatInput" placeholder="和嘉小图聊聊…" onkeydown="if(event.key==='Enter')send()">
           <button onclick="send()">发送</button>
         </div>
@@ -554,6 +610,11 @@
       </div>
 
     </div>
+    <div class="voice-ov" id="voiceOv">
+      <div class="voice-wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="voice-tip" id="voiceTip">正在聆听…</div>
+      <div class="voice-text" id="voiceText"></div>
+    </div>
     <div class="tabbar">
       <div class="tab active" data-page="home" onclick="go('home')"><span class="ti">🏠</span>首页</div>
       <div class="tab" data-page="space" onclick="go('space')"><span class="ti">🪑</span>空间</div>
@@ -680,7 +741,11 @@ function go(name){
   pages.forEach(p=>p.classList.toggle('active',p.id==='page-'+name));
   tabs.forEach(t=>t.classList.toggle('active',t.dataset.page===name));
   bnItems.forEach(n=>n.classList.toggle('active',n.dataset.page===name));
-  document.getElementById('screen').scrollTop=0;
+  const sc=document.getElementById('screen'); sc.scrollTop=0;
+  // 对话页隐藏悬浮球，避免遮挡发送按钮；并滚到最新消息
+  const fab=document.querySelector('.fab');
+  if(fab) fab.style.display = (name==='chat') ? 'none' : '';
+  if(name==='chat') setTimeout(scrollBottom,60);
 }
 function openPhone(name){
   go(name);
@@ -699,7 +764,6 @@ function fillData(){
   document.getElementById('k_peak').textContent = hp[0]+':00';
   document.getElementById('k_dept').textContent = DATA.swipe.topDept[0][0].slice(0,4);
   document.getElementById('k_myrank').textContent = DATA.swipe.topDept.findIndex(d=>d[0]==='信息科学与技术学院')+1;
-  document.getElementById('k_papers').textContent = '3.99 万';
   document.getElementById('k_yfirst').textContent = DATA.scholar.yearMin;
   document.getElementById('k_ylast').textContent = DATA.scholar.yearMax;
   const g0=DATA.scholar.year[2011], g1=DATA.scholar.year[2020];
@@ -746,16 +810,191 @@ for(let i=0;i<24;i++){
   seatMap.appendChild(s);
 }
 
-/* ===== AI 对话 ===== */
+/* ===== AI 对话：意图识别 + 服务卡片 + 流式输出 + 语音 + 会话保存 ===== */
 const chatBox=document.getElementById('chatBox');
-function push(text,who){const d=document.createElement('div');d.className='msg '+who;d.textContent=text;chatBox.appendChild(d);document.getElementById('screen').scrollTop=99999;}
-function send(){const inp=document.getElementById('chatInput');if(!inp.value.trim())return;push(inp.value,'me');inp.value='';
-  const t=push('嘉小图正在输入…','bot'); t.style.opacity=.55;
-  setTimeout(()=>{t.remove();const r=['🔍 已在学校学者库 3.99 万篇成果里为你筛出相关文献，并标注 3 篇高被引。',
-    '💡 结合你学院的入馆规律（高峰 18:00），建议把深度学习改在上午做，下午留给组会。',
-    '🤝 已匹配到 2 位同选题同学，他们近期也常驻 3F，要我牵线建共研群吗？',
-    '📊 该选题文献近十年增长 4.5 倍，是上升热点！我为你画了趋势图。'];push(r[Math.floor(Math.random()*r.length)],'bot');},600);}
-function botSay(t){push(t,'bot');}
+const CHAT_KEY='jxt_chat_v1';
+let streamTimer=null, voiceTimer=null, streamStopped=false, isStreaming=false;
+
+const escJs=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function scrollBottom(){const sc=document.getElementById('screen');sc.scrollTop=sc.scrollHeight;}
+function saveChat(){try{localStorage.setItem(CHAT_KEY,chatBox.innerHTML);}catch(e){}}
+function restoreChat(){
+  try{const h=localStorage.getItem(CHAT_KEY);if(h&&h.trim()){chatBox.innerHTML=h;scrollBottom();return true;}}catch(e){}
+  return false;
+}
+function seedChat(){
+  chatBox.innerHTML='<div class="msg bot">👋 同学好，我是嘉小图～现在能帮你：<br>📚 找书借阅 · 🪑 查空座位 · 📄 推荐文献 · 📈 看入馆数据 · 🎤 听你讲话。<br>点下方快捷问题，或直接问我。</div>';
+}
+function clearChat(){
+  chatBox.innerHTML=''; seedChat(); saveChat();
+  const hint=document.getElementById('saveHint'); if(hint){hint.textContent='💾 已清空，新会话已开始';}
+}
+
+function push(text,who){
+  const d=document.createElement('div');d.className='msg '+who;
+  d.innerHTML=escJs(text).replace(/\n/g,'<br>');
+  chatBox.appendChild(d);scrollBottom();return d;
+}
+
+/* 打字机式流式输出 */
+function botStream(text,cardHtml){
+  const d=document.createElement('div'); d.className='msg bot'; chatBox.appendChild(d);
+  const body=document.createElement('span'); d.appendChild(body);
+  const caret=document.createElement('span'); caret.className='caret'; d.appendChild(caret);
+  let i=0; isStreaming=true; streamStopped=false; showStop(true);
+  clearInterval(streamTimer);
+  streamTimer=setInterval(()=>{
+    if(streamStopped){ finish(false); return; }
+    i+=2; body.textContent=text.slice(0,i); scrollBottom();
+    if(i>=text.length){ finish(true); }
+  },26);
+  function finish(complete){
+    clearInterval(streamTimer); isStreaming=false; showStop(false);
+    if(complete) body.textContent=text; else body.textContent=text.slice(0,i);
+    caret.remove();
+    if(cardHtml){ d.classList.add('card'); const c=document.createElement('div'); c.innerHTML=cardHtml; d.appendChild(c); }
+    scrollBottom(); saveChat();
+  }
+}
+function showStop(on){const b=document.getElementById('stopChip'); if(b)b.classList.toggle('show',on);}
+function stopStream(){ if(isStreaming) streamStopped=true; }
+
+/* 意图识别：全部答案来自页面内真实数据集 DATA */
+function answer(q){
+  const t=q.replace(/\s/g,'');
+  if(/考研|备考|考公|社群/.test(t)) return ansPrep();
+  if(/人多|入馆|高峰|人流|几点|忙不忙/.test(t)) return ansFlow();
+  if(/座|自习|空位|位置/.test(t)) return ansSeat();
+  if(/研讨|会议室|小组间/.test(t)) return ansRoom();
+  if(/文献|论文|期刊|学者|检索/.test(t)) return ansPaper();
+  if(/书|借阅|馆藏|找一本/.test(t)) return ansBook();
+  if(/累|休息|放松|困/.test(t)) return ansRest();
+  if(/功能|会什么|能做什么|怎么用|帮我什么/.test(t)) return ansHelp();
+  return ansFallback();
+}
+
+function ansFlow(){
+  const hp=Object.entries(DATA.swipe.hour).sort((a,b)=>b[1]-a[1])[0];
+  const total=(DATA.entry.total/10000).toFixed(1);
+  return {text:`📈 累计入馆 ${total} 万人次的门禁数据显示：每日高峰在 ${hp[0]}:00（${(hp[1]/10000).toFixed(2)} 万次），12:00 还有一个午休次高峰。想安静自习，建议避开这两个时段。`};
+}
+function ansBook(){
+  const books=[
+    {t:'人工智能简史',info:'3F A 区 · 可借 2 本',m:'98%',g:'linear-gradient(160deg,#B8332A,#E08A2B)'},
+    {t:'数据思维实践',info:'2F B 区 · 可借 1 本',m:'95%',g:'linear-gradient(160deg,#1FA98C,#B8332A)'},
+    {t:'闽南文化漫谈',info:'4F 特藏 · 仅供阅览',m:'91%',g:'linear-gradient(160deg,#E0799C,#ff9a5c)'}
+  ];
+  const card='<div class="rc-head">📚 依据你的画像与 45.3 万册馆藏，找到这些可借图书</div>'+
+    books.map(b=>`<div class="rc-item">
+      <div class="rc-cover" style="background:${b.g}">${b.t}</div>
+      <div class="rc-info"><b>${b.t}</b><span>${b.info} · 匹配度 ${b.m}</span></div>
+      <button class="rc-btn" onclick="borrowBook(this,'${b.t}')">借阅</button>
+    </div>`).join('');
+  return {text:'📚 找到 3 本高匹配图书，可直接预约借阅：',card};
+}
+function ansSeat(){
+  const all=document.querySelectorAll('#seatMap .s').length;
+  const used=document.querySelectorAll('#seatMap .s.used').length;
+  const seats=[
+    {id:'A12',info:'靠窗 · 静音区 · 光照充足'},
+    {id:'B03',info:'靠窗 · 近插座 · 人流较少'},
+    {id:'C02',info:'远离过道 · 适合深度阅读'}
+  ];
+  const card='<div class="rc-head">🪑 3F 心流阅读区 · 当前可选 '+(all-used)+' 个座位</div>'+
+    seats.map(s=>`<div class="rc-item">
+      <div class="rc-cover" style="background:linear-gradient(160deg,#1FA98C,#B8332A)">${s.id}</div>
+      <div class="rc-info"><b>${s.id} 座位</b><span>${s.info}</span></div>
+      <button class="rc-btn" onclick="reserveSeatAt(this,'${s.id}')">预约</button>
+    </div>`).join('');
+  return {text:`🪑 3F 共 ${all} 个座位，已被占用 ${used} 个，还有 ${all-used} 个可选。按你的「靠窗 · 静音」偏好推荐：`,card};
+}
+function ansRoom(){
+  const rooms=DATA.seminar.rooms;
+  const card='<div class="rc-head">🏛 研讨室热度 Top · 共 1.74 万次预约</div>'+
+    rooms.slice(0,3).map(([n,c])=>`<div class="rc-item">
+      <div class="rc-cover" style="background:linear-gradient(160deg,#E08A2B,#E0799C)">${n.slice(0,2)}</div>
+      <div class="rc-info"><b>${n}</b><span>历史预约 ${c.toLocaleString()} 次 · 单次约 2.0 人</span></div>
+      <button class="rc-btn" onclick="reserveSeatAt(this,'${n}')">预约</button>
+    </div>`).join('');
+  return {text:'🏛 最热门的三个研讨室在这儿，点预约即可锁定：',card};
+}
+function ansPaper(){
+  const js=DATA.scholar.journal;
+  const card='<div class="rc-head">📄 学者库 3.99 万篇成果 · 与本选题相关 42 篇</div>'+
+    js.slice(0,3).map(([n,c])=>`<div class="rc-item">
+      <div class="rc-cover" style="background:linear-gradient(160deg,#B8332A,#1FA98C)">刊</div>
+      <div class="rc-info"><b>${n}</b><span>本校作者 ${c} 篇 · 高被引</span></div>
+      <button class="rc-btn" onclick="this.classList.add('done');this.textContent='已追踪'">追踪</button>
+    </div>`).join('');
+  return {text:'📄 从学者库为你筛出 42 篇「AI+教育」相关文献，高频期刊如下：',card};
+}
+function ansPrep(){
+  const total=DATA.prep.types.reduce((s,x)=>s+x[1],0);
+  const y=DATA.prep.types[0];
+  return {text:`🎯 备考联盟共 ${total.toLocaleString()} 人，考研占 ${(y[1]/total*100).toFixed(0)}%（${y[1].toLocaleString()} 人）。要我按你的专业匹配同频盟友、组建共研室吗？`};
+}
+function ansRest(){
+  return {text:'🎧 连续学习久了容易疲劳～5 楼「减压舱」有 10 分钟白噪音，我已按入馆高峰规律为你留位。需要我现在预约吗？'};
+}
+function ansHelp(){
+  return {text:'我能做这些事：\n📚 找书 / 借阅（45.3 万册馆藏）\n🪑 查空座 / 预约座位（4.95 万条预约）\n🏛 预约研讨室（1.74 万次使用）\n📄 文献推荐 / 期刊追踪（3.99 万篇）\n📈 入馆人流与学院数据（379.3 万人次）\n🎤 语音提问：点输入框前的麦克风'};
+}
+function ansFallback(){
+  return {text:'我可能需要更多线索～你可以这样问我：\n「找一本人工智能的书」\n「现在图书馆人多吗」\n「有没有安静的空座位」\n「帮我推荐几篇文献」'};
+}
+
+/* 发送与回复 */
+function ask(text){
+  push(text,'me'); saveChat();
+  respond(text);
+}
+function send(){
+  const inp=document.getElementById('chatInput');
+  const t=inp.value.trim(); if(!t) return;
+  inp.value=''; ask(t);
+}
+function respond(text){
+  if(isStreaming) stopStream();
+  const typing=document.createElement('div'); typing.className='msg bot typing';
+  typing.innerHTML='<span></span><span></span><span></span>';
+  chatBox.appendChild(typing); scrollBottom();
+  setTimeout(()=>{
+    typing.remove();
+    const r=answer(text);
+    botStream(r.text, r.card);
+  },520);
+}
+function botSay(t){ respond(t); }
+
+/* 语音输入（模拟） */
+function startVoice(){
+  if(isStreaming) return;
+  const ov=document.getElementById('voiceOv'), tip=document.getElementById('voiceTip'),
+        tx=document.getElementById('voiceText'), mic=document.getElementById('micBtn');
+  const pool=['帮我找一本人工智能的书','现在图书馆人多吗','有没有安静的空座位','帮我推荐几篇文献','考研的人多不多'];
+  const said=pool[Math.floor(Math.random()*pool.length)];
+  ov.classList.add('show'); mic.classList.add('on');
+  tip.textContent='正在聆听…'; tx.textContent='';
+  let i=0;
+  clearInterval(voiceTimer);
+  voiceTimer=setInterval(()=>{ i++; tx.textContent=said.slice(0,i); },90);
+  setTimeout(()=>{
+    clearInterval(voiceTimer); tx.textContent=said; tip.textContent='识别完成 ✓';
+    setTimeout(()=>{ ov.classList.remove('show'); mic.classList.remove('on'); ask(said); },450);
+  },1400);
+}
+
+/* 卡片动作 */
+function borrowBook(btn,title){
+  showConfirm('📚','确认借阅《'+title+'》？','借期 30 天，到期前 3 天提醒；可到任一楼层自助机取书。',()=>{
+    btn.classList.add('done'); btn.textContent='已借出'; saveChat();
+  });
+}
+function reserveSeatAt(btn,name){
+  showConfirm('🪑','确认预约 '+name+'？','已为你避开 18:00 入馆高峰，确认后将锁定该位置 30 分钟，请按时签到。',()=>{
+    btn.classList.add('done'); btn.textContent='已预约'; saveChat();
+  });
+}
 
 /* ===== 二次确认弹窗（防误触 / 异常状态） ===== */
 let modalCb=null;
@@ -775,6 +1014,7 @@ function genReading(btn){
 }
 
 fillData();
+if(!restoreChat()) seedChat();
 </script>
 </body>
 </html>
